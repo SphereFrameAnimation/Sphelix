@@ -1,0 +1,10 @@
+#CMake build files
+build/
+#git
+.git/
+#VS
+out/
+.vs/
+CMakeSettings.json
+#Extra
+src/test/
