@@ -15,7 +15,7 @@ add_compile_definitions(PLUGIN_VENDOR="${PLUGIN_VENDOR}")
 add_compile_definitions(PLUGIN_VERSION="${PLUGIN_VERSION}")
 
 #Source and lib
-set(SOURCE_FILES src/PluginMain.cpp)
+set(SOURCE_FILES src/PluginMain.cpp src/TwistReaderNode.cpp)
 set(LIBRARIES OpenMaya Foundation)
 
 #Build

@@ -7,5 +7,6 @@
 #define SPHELIX_MAIN
 
 #include "maya/MFnPlugin.h"
+#include "TwistReaderNode.hpp"
 
 #endif
