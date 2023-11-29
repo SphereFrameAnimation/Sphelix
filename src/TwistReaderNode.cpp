@@ -15,7 +15,52 @@ MStatus TwistReaderNode::compute(const MPlug& plug, MDataBlock& data)
 
 	MStatus status;
 
-	//COMPUTE
+	if (plug == twist)
+	{
+
+		MDataHandle objH = data.inputValue(object);
+		MString str = objH.asString();
+		MSelectionList list;
+		list.add(str);
+		MDagPath dag;
+		list.getDagPath(0, dag);
+		MFnTransform mat(dag);
+		MQuaternion quat;
+		mat.getRotation(quat);
+
+		MVector rAim(1, 0, 0);
+		MVector rUp(0, 1, 0);
+		MVector rForward(0, 0, 1);
+
+		MVector aim = rAim.rotateBy(quat);
+		MVector up = rUp.rotateBy(quat);
+		MVector forward = rForward.rotateBy(quat);
+
+		MQuaternion rot = rAim.rotateTo(aim);
+		MVector iUp = rUp.rotateBy(rot);
+		MVector iForward = rForward.rotateBy(rot);
+
+		if (!iUp.isEquivalent(up, 0.001) && !iForward.isEquivalent(forward, 0.001))
+		{
+		
+			MAngle ang(iUp.angle(up));
+			MDataHandle twistH = data.outputValue(twist);
+			if (MAngle(up.angle(iForward)).asRadians() >= MAngle(up.angle(-iForward)).asRadians())
+			{
+
+				twistH.setFloat(ang.asDegrees());
+
+			}
+			else
+			{
+
+				twistH.setFloat(-ang.asDegrees());
+
+			}
+		
+		}
+
+	}
 
 	return status;
 

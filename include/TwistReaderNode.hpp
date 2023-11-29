@@ -9,6 +9,12 @@
 #include "maya/MPxNode.h"
 #include "maya/MFnTypedAttribute.h"
 #include "maya/MFnNumericAttribute.h"
+#include "maya/MVector.h"
+#include "maya/MDagPath.h"
+#include "maya/MSelectionList.h"
+#include "maya/MFnTransform.h"
+#include "maya/MQuaternion.h"
+#include "maya/MAngle.h"
 
 class TwistReaderNode : public MPxNode
 {
