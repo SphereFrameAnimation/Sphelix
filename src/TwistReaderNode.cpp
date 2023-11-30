@@ -18,6 +18,9 @@ MStatus TwistReaderNode::compute(const MPlug& plug, MDataBlock& data)
 	if (plug == twist)
 	{
 
+		MDataHandle updH = data.inputValue(matrix);
+		updH.asFloat3();
+
 		MDataHandle objH = data.inputValue(object);
 		MString str = objH.asString();
 		MSelectionList list;
@@ -40,24 +43,30 @@ MStatus TwistReaderNode::compute(const MPlug& plug, MDataBlock& data)
 		MVector iUp = rUp.rotateBy(rot);
 		MVector iForward = rForward.rotateBy(rot);
 
-		if (!iUp.isEquivalent(up, 0.001) && !iForward.isEquivalent(forward, 0.001))
+		MDataHandle twistH = data.outputValue(twist);
+		if (!iUp.isEquivalent(up, 0.00001) && !iForward.isEquivalent(forward, 0.00001))
 		{
 		
 			MAngle ang(iUp.angle(up));
-			MDataHandle twistH = data.outputValue(twist);
 			if (MAngle(up.angle(iForward)).asRadians() >= MAngle(up.angle(-iForward)).asRadians())
-			{
-
-				twistH.setFloat(ang.asDegrees());
-
-			}
-			else
 			{
 
 				twistH.setFloat(-ang.asDegrees());
 
 			}
+			else
+			{
+
+				twistH.setFloat(ang.asDegrees());
+
+			}
 		
+		}
+		else
+		{
+
+			twistH.setFloat(0.0);
+
 		}
 
 	}
@@ -80,7 +89,7 @@ MStatus TwistReaderNode::init()
 	status = addAttribute(object);
 
 	//Matrix input attribute
-	matrix = tAttr.create("m", "m", MFnData::kMatrix, &status);
+	matrix = tAttr.create("Matrix", "mat", MFnData::kMatrix, &status);
 	status = tAttr.setKeyable(false);
 	status = addAttribute(matrix);
 
