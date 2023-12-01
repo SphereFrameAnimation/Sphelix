@@ -7,6 +7,7 @@
 
 MTypeId TwistReaderNode::id(0x00000); //ID 0 [TEST ONLY]
 MObject TwistReaderNode::object;
+MObject TwistReaderNode::offset;
 MObject TwistReaderNode::matrix;
 MObject TwistReaderNode::twist;
 
@@ -18,8 +19,9 @@ MStatus TwistReaderNode::compute(const MPlug& plug, MDataBlock& data)
 	if (plug == twist)
 	{
 
-		MDataHandle updH = data.inputValue(matrix);
-		updH.asFloat3();
+		//Get matrix to force node update on transform matrix 
+		MDataHandle matrixH = data.inputValue(matrix);
+		matrixH.asFloat3();
 
 		MDataHandle objH = data.inputValue(object);
 		MString str = objH.asString();
@@ -30,14 +32,17 @@ MStatus TwistReaderNode::compute(const MPlug& plug, MDataBlock& data)
 		MFnTransform mat(dag);
 		MQuaternion quat;
 		mat.getRotation(quat);
+		MDataHandle offH = data.inputValue(offset);
+		double* wxyz = offH.asDouble4();
+		MQuaternion oQuat(wxyz[1], wxyz[2], wxyz[3], wxyz[0]);
 
 		MVector rAim(1, 0, 0);
 		MVector rUp(0, 1, 0);
 		MVector rForward(0, 0, 1);
 
-		MVector aim = rAim.rotateBy(quat);
-		MVector up = rUp.rotateBy(quat);
-		MVector forward = rForward.rotateBy(quat);
+		MVector aim = rAim.rotateBy(quat*oQuat);
+		MVector up = rUp.rotateBy(quat*oQuat);
+		MVector forward = rForward.rotateBy(quat*oQuat);
 
 		MQuaternion rot = rAim.rotateTo(aim);
 		MVector iUp = rUp.rotateBy(rot);
@@ -88,6 +93,12 @@ MStatus TwistReaderNode::init()
 	status = tAttr.setConnectable(false);
 	status = addAttribute(object);
 
+	//Offset input attribute
+	offset = nAttr.create("Offset", "off", MFnNumericData::k4Double, 0, &status);
+	status = nAttr.setKeyable(false);
+	status = nAttr.setConnectable(false);
+	status = addAttribute(offset);
+
 	//Matrix input attribute
 	matrix = tAttr.create("Matrix", "mat", MFnData::kMatrix, &status);
 	status = tAttr.setKeyable(false);
@@ -101,6 +112,7 @@ MStatus TwistReaderNode::init()
 
 	//Affects
 	attributeAffects(object, twist);
+	attributeAffects(offset, twist);
 	attributeAffects(matrix, twist);
 
 	return status;
