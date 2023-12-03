@@ -22,6 +22,9 @@ class TwistReaderNode : public MPxNode
 	public:
 		static MTypeId id;
 		static MObject object;
+		static MObject aimVec;
+		static MObject upVec;
+		static MObject fwdVec;
 		static MObject offset;
 		static MObject matrix;
 		static MObject twist;
