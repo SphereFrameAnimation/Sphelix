@@ -5,7 +5,7 @@
 */
 #include "TwistReaderNode.hpp"
 
-MTypeId TwistReaderNode::id(0x13D5C0, 0x00); //ID 1299904-001
+MTypeId TwistReaderNode::id(0x13D5C0, 0x00); //ID 1299904-000
 MObject TwistReaderNode::object;
 MObject TwistReaderNode::aimVec;
 MObject TwistReaderNode::upVec;
